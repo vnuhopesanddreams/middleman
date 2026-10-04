@@ -16,9 +16,9 @@ signal points_changed(total: int)
 
 ## Time between arrivals. Each arrival is either a new couple's first person or
 ## the missing partner of any couple still waiting, picked at random.
-@export var arrival_interval_min := 6.0
-@export var arrival_interval_max := 12.0
-@export var max_couples := 4
+@export var arrival_interval_min := 5.0
+@export var arrival_interval_max := 9.0
+@export var max_couples := 5
 
 var tables: Array[Table] = []
 var couples: Array[Couple] = []
@@ -108,10 +108,11 @@ func _on_couple_ended(finished: bool, couple: Couple) -> void:
 	if finished:
 		points += roundi(couple.happiness)
 		points_changed.emit(points)
+		couple.table.celebrate()
 	couples.erase(couple)
 	couple.table.release()
 	for person in couple.people:
-		person.leave(walk_grid.find_path(person.feet_position(), exit.global_position))
+		person.leave(walk_grid.find_path(person.feet_position(), exit.global_position), not finished)
 	couple.queue_free()
 
 

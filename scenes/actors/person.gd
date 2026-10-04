@@ -18,28 +18,82 @@ const FOLLOW_DISTANCE = 14.0
 const LEAVE_SPEED = 40.0
 ## From the body origin (sprite center) down to the feet, which is what walks the grid.
 const FEET_OFFSET = Vector2(0, 10)
+## Worn while the waiter is leading them (same gold as the ring around their table).
+const HELD_COLOR = Color(1.0, 0.85, 0.3)
+## Worn while not seated at a table: waiting at the door, or leaving after their date.
+const UNSEATED_COLOR = Color(0.62, 0.62, 0.66)
+## Pulsed toward while something is going wrong for them that the waiter hasn't
+## started fixing yet.
+const PROBLEM_COLOR = Color(1.0, 0.5, 0.05)
+## Pulsed toward while their date is troubled and close to falling apart, and worn when
+## they storm out.
+const ANGRY_COLOR = Color(1.0, 0.25, 0.2)
+## Below this much happiness (out of 100) a troubled date counts as close to falling apart.
+const DANGER_HAPPINESS = 30.0
+const PULSE_SPEED = 8.0
+## Dark edge around the "!" over someone with a problem.
+const MARK_OUTLINE = Color(0.1, 0.06, 0.08)
+## Waiting (at the door, or alone at the table for their date): they start sweating
+## after a while, more and more until full at SWEAT_FULL (when a lonely guest's meter
+## starts draining).
+const SWEAT_AFTER = 3.0
+const SWEAT_FULL = 10.0
+const MAX_SWEAT_DROPS = 6
+const SWEAT_COLOR = Color(0.55, 0.8, 1.0)
 
 var couple: Couple
 var state := State.WAITING
 var leader: Node2D
 var seat: Seat
+## Where they were before being led, to go back to when that ends.
+var _home: Node
+## Left because the date went wrong.
+var _stormed_out := false
 
 var _facing := Vector2.DOWN
 var _moving := false
 var _animation_time := 0.0
 var _path := PackedVector2Array()
+## How long they've been kept waiting this time.
+var _wait_time := 0.0
+## Draws the sweat, over the sprite (this node's own drawing goes under it).
+var _sweat := Node2D.new()
 
 @onready var sprite: Sprite2D = $Sprite2D
 
 
+func _ready() -> void:
+	add_child(_sweat)
+	_sweat.draw.connect(_draw_sweat)
+
+
+## Waiting: the waiter takes them. Seated: the waiter fixes what's wrong with them, or
+## if nothing is, it's the same as visiting their table.
 func interact(waiter: Node2D) -> void:
 	if state == State.WAITING and waiter.can_hold():
 		waiter.hold(self)
+	elif state == State.SEATED and couple:
+		var problem := current_problem()
+		if problem:
+			waiter.fix_problem(problem)
+		else:
+			couple.cheer_up()
 
 
-func start_following(new_leader: Node2D) -> void:
+## What's going wrong for them on their date right now, if anything.
+func current_problem() -> DateProblem:
+	for child in get_children():
+		if child is DateProblem and not child.is_queued_for_deletion():
+			return child
+	return null
+
+
+## `holder` is where they are kept while following (see the waiter's `followers`).
+func start_following(new_leader: Node2D, holder: Node) -> void:
 	leader = new_leader
 	state = State.FOLLOWING
+	_home = get_parent()
+	reparent(holder)
 	_set_table_highlighted(true)
 	picked_up.emit()
 
@@ -60,9 +114,10 @@ func feet_position() -> Vector2:
 
 
 ## Walks the given path (feet positions) and disappears at the end of it.
-## Works from any state (waiting, held or seated).
-func leave(path: PackedVector2Array) -> void:
+## Works from any state (waiting, held or seated). `stormed_out` turns them red.
+func leave(path: PackedVector2Array, stormed_out := false) -> void:
 	_stop(State.LEAVING)
+	_stormed_out = stormed_out
 	if seat:
 		seat.occupant = null
 		seat = null
@@ -75,6 +130,9 @@ func _stop(new_state: State) -> void:
 	_set_table_highlighted(false)
 	leader = null
 	state = new_state
+	if _home:
+		reparent(_home)
+		_home = null
 	_moving = false
 
 
@@ -115,11 +173,69 @@ func _move_to(target: Vector2) -> void:
 
 func _process(delta: float) -> void:
 	_animation_time += delta
+	_wait_time = _wait_time + delta if is_waiting() else 0.0
+	_sweat.queue_redraw()
 	var row := WALK_ROW if _moving else IDLE_ROW
 	var column: int = FACING_COLUMN[Vector2.RIGHT if _facing == Vector2.LEFT else _facing]
 	column += int(_animation_time * ANIMATION_FPS) % FRAMES_PER_STRIP
 	sprite.frame = row * SHEET_COLUMNS + column
 	sprite.flip_h = _facing == Vector2.LEFT
+	sprite.modulate = _tint()
+	queue_redraw()
+
+
+## Colour cues, most important first: red storming out, gold being led, red pulsing
+## close to storming out, orange with a problem to fix, gray not seated at a table.
+func _tint() -> Color:
+	var pulse := 0.5 + 0.5 * sin(_animation_time * PULSE_SPEED)
+	if _stormed_out:
+		return ANGRY_COLOR
+	if state == State.FOLLOWING:
+		return HELD_COLOR
+	if couple and couple.troubled and couple.happiness < DANGER_HAPPINESS:
+		return Color.WHITE.lerp(ANGRY_COLOR, 0.4 + 0.6 * pulse)
+	var problem := current_problem()
+	if problem and not problem.active:
+		return Color.WHITE.lerp(PROBLEM_COLOR, 0.55 + 0.45 * pulse)
+	if state != State.SEATED:
+		return UNSEATED_COLOR
+	return Color.WHITE
+
+
+## At the door to be seated, or seated with their date not there yet.
+func is_waiting() -> bool:
+	if state == State.WAITING:
+		return true
+	return state == State.SEATED and couple != null and not couple.is_seated()
+
+
+## Drops flicking off both sides of the head, more the longer they've waited.
+func _draw_sweat() -> void:
+	var amount := clampf((_wait_time - SWEAT_AFTER) / (SWEAT_FULL - SWEAT_AFTER), 0.0, 1.0)
+	if amount <= 0.0:
+		return
+	var drops := ceili(amount * MAX_SWEAT_DROPS)
+	var speed := 1.0 + amount
+	for i in drops:
+		var t := fmod(_animation_time * speed + float(i) / drops, 1.0)
+		var side := -1.0 if i % 2 == 0 else 1.0
+		# From the side of the head, arcing out and falling.
+		var at := Vector2(side * (4.0 + t * 8.0), -8.0 - sin(t * PI) * 4.0 + t * 7.0)
+		var fade := 1.0 - t * t
+		_sweat.draw_circle(at, 1.9, Color(MARK_OUTLINE, fade))
+		_sweat.draw_circle(at, 1.3, Color(SWEAT_COLOR, fade))
+
+
+## A bouncing "!" over someone with a problem nobody's fixing yet.
+func _draw() -> void:
+	var problem := current_problem()
+	if problem == null or problem.active:
+		return
+	var top := Vector2(0, -24 - absf(sin(_animation_time * 5.0)) * 3.0)
+	for pass_color in [MARK_OUTLINE, PROBLEM_COLOR]:
+		var grow := 1.0 if pass_color == MARK_OUTLINE else 0.0
+		draw_rect(Rect2(top + Vector2(-1, 0), Vector2(2, 5)).grow(grow), pass_color)
+		draw_rect(Rect2(top + Vector2(-1, 6), Vector2(2, 2)).grow(grow), pass_color)
 
 
 func _direction_of(step: Vector2) -> Vector2:
