@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://w6hqxb773c6"]
+
+[ext_resource type="Script" uid="uid://cq77rv2bw3tow" path="res://scenes/actors/chelner.gd" id="1_snmte"]
+[ext_resource type="Texture2D" uid="uid://bmnpiknk852jl" path="res://assets/characters/chelner_normalpng.png" id="2_e0iub"]
+[ext_resource type="Texture2D" uid="uid://bd0kob08at7wk" path="res://assets/characters/chelner_n_back.png" id="3_back"]
+[ext_resource type="Texture2D" uid="uid://8o0bbxigt8eb" path="res://assets/characters/chelner_n_left.png" id="4_left"]
+[ext_resource type="Texture2D" uid="uid://d1jfg1f12v4a1" path="res://assets/characters/chelner_n_right.png" id="5_right"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gefrl"]
+size = Vector2(16, 15)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interact"]
+radius = 17.088007
+
+[node name="CharacterBody2D" type="CharacterBody2D" unique_id=261786503]
+script = ExtResource("1_snmte")
+sprite_down = ExtResource("2_e0iub")
+sprite_up = ExtResource("3_back")
+sprite_left = ExtResource("4_left")
+sprite_right = ExtResource("5_right")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1516761168]
+texture = ExtResource("2_e0iub")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1024616118]
+position = Vector2(0, 8.5)
+shape = SubResource("RectangleShape2D_gefrl")
+
+[node name="InteractArea" type="Area2D" parent="." unique_id=1730582214]
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea" unique_id=905174663]
+position = Vector2(0, 4)
+rotation = 1.1908424
+shape = SubResource("CircleShape2D_interact")

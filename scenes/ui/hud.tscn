@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/hud.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="PointsLabel" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 16.0
+offset_right = 324.0
+offset_bottom = 64.0
+theme_override_colors/font_outline_color = Color(0.1, 0.06, 0.08, 1)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 32
+text = "Points: 0"

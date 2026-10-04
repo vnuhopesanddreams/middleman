@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://bgnx15yu6wwb7"]
+
+[ext_resource type="Script" path="res://scenes/actors/person.gd" id="1_person"]
+[ext_resource type="Texture2D" uid="uid://d08lgayws07s4" path="res://assets/characters/eris esra sheet.png" id="1_55lxv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_feet"]
+size = Vector2(12, 8)
+
+[node name="Person" type="CharacterBody2D" unique_id=362383424]
+collision_layer = 2
+script = ExtResource("1_person")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=940031499]
+texture = ExtResource("1_55lxv")
+hframes = 35
+vframes = 7
+frame = 35
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1311874052]
+position = Vector2(0, 10)
+shape = SubResource("RectangleShape2D_feet")

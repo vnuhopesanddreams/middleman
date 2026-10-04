@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/shift/shift_manager.gd" id="1_shift"]
+[ext_resource type="PackedScene" uid="uid://bgnx15yu6wwb7" path="res://scenes/actors/person.tscn" id="2_person"]
+
+[node name="ShiftManager" type="Node"]
+script = ExtResource("1_shift")
+person_scene = ExtResource("2_person")
