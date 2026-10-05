@@ -17,6 +17,8 @@ func handle_input(event: InputEvent, point: Vector2) -> bool:
 		return false
 	if point.distance_to(_fly_position()) <= HIT_RADIUS:
 		_succeed()
+	else:
+		Sfx.play("action")
 	return true
 
 

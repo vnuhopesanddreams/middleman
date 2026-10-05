@@ -37,11 +37,15 @@ func handle_input(event: InputEvent, _point: Vector2) -> bool:
 	var hit := absf(_ring_radius() - TARGET_RADIUS) <= TOLERANCE
 	_flash_left = FLASH_TIME
 	_flash_color = Color(0.4, 1.0, 0.5) if hit else Color(1.0, 0.35, 0.3)
-	if hit:
+	if not hit:
+		Sfx.play("qte_fail")
+	else:
 		_ring_time = 0.0
 		_breaths += 1
 		if _breaths >= BREATHS_NEEDED:
 			_succeed()
+		else:
+			Sfx.play("action")
 	return true
 
 

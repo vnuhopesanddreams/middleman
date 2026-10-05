@@ -44,7 +44,10 @@ func _on_shift_over(survived: bool) -> void:
 	%NoBump.visible = survived and not %NoBump.text.is_empty()
 	%PlayAgainButton.text = "BUMP TO PLAY AGAIN" if _needs_bump() else "PLAY AGAIN"
 	score.text = str(shift_manager.points)
+	if survived:
+		Sfx.play("shift_win")
 	if SaveData.record_score(shift_manager.points):
+		Sfx.play("new_best")
 		best.text = "NEW BEST!"
 		_flash(best)
 	else:

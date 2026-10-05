@@ -71,6 +71,8 @@ var _path := PackedVector2Array()
 var _wait_time := 0.0
 ## How long they've spent waiting at the door in all (see DOOR_PATIENCE).
 var _door_time := 0.0
+## How bad things are for them, to sound it when it gets worse (see `_mood_level`).
+var _mood := 0
 ## Draws the sweat, over the sprite (this node's own drawing goes under it).
 var _sweat := Node2D.new()
 
@@ -115,6 +117,7 @@ func start_following(new_leader: Node2D, holder: Node) -> void:
 
 
 func stop_following() -> void:
+	Sfx.play("drop")
 	_stop(State.WAITING)
 	dropped.emit()
 
@@ -128,6 +131,7 @@ func walk_back(path: PackedVector2Array) -> void:
 func sit(new_seat: Seat) -> void:
 	_stop(State.SEATED)
 	seat = new_seat
+	Sfx.play("seat")
 	global_position = seat.global_position
 	_facing = seat.facing
 	seated.emit()
@@ -215,6 +219,23 @@ func _process(delta: float) -> void:
 	sprite.flip_h = _facing == Vector2.LEFT
 	sprite.modulate = _tint()
 	queue_redraw()
+	var mood := _mood_level()
+	if mood > _mood:
+		Sfx.play("worse")
+	_mood = mood
+
+
+## 0 fine, 1 a problem on their date, 2 close to storming out (the same cues as
+## `_tint`). Sweating while waiting doesn't count: it comes on too often to sound.
+func _mood_level() -> int:
+	if state == State.LEAVING:
+		return 0
+	if (couple and couple.troubled and couple.happiness < DANGER_HAPPINESS) \
+			or (state == State.WAITING and _door_time > DOOR_ANGRY_AFTER):
+		return 2
+	if current_problem():
+		return 1
+	return 0
 
 
 ## Colour cues, most important first: red storming out, gold being led, red pulsing
@@ -226,7 +247,8 @@ func _tint() -> Color:
 		return ANGRY_COLOR
 	if state == State.FOLLOWING:
 		return HELD_COLOR
-	if (couple and couple.troubled and couple.happiness < DANGER_HAPPINESS) 			or (state == State.WAITING and _door_time > DOOR_ANGRY_AFTER):
+	if (couple and couple.troubled and couple.happiness < DANGER_HAPPINESS) \
+			or (state == State.WAITING and _door_time > DOOR_ANGRY_AFTER):
 		return Color.WHITE.lerp(ANGRY_COLOR, 0.4 + 0.6 * pulse)
 	var problem := current_problem()
 	if problem and not problem.active:

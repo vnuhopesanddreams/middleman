@@ -24,6 +24,8 @@ func handle_input(event: InputEvent, _point: Vector2) -> bool:
 	_spray_left = SPRAY_TIME
 	if _taps >= TAPS_NEEDED:
 		_succeed()
+	else:
+		Sfx.play("action")
 	return true
 
 

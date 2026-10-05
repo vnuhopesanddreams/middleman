@@ -52,10 +52,12 @@ func _process(delta: float) -> void:
 		time_left -= delta
 		if time_left <= 0.0:
 			active = false
+			Sfx.play("qte_fail")
 	queue_redraw()
 
 
 func _succeed() -> void:
+	Sfx.play("qte_success")
 	active = false
 	solved.emit()
 	queue_free()

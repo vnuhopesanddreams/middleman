@@ -70,7 +70,7 @@ func _process(delta: float) -> void:
 		return
 	time_left = maxf(time_left - delta, 0.0)
 	if time_left <= 0.0:
-		_end_shift(true)
+		end_shift(true)
 		return
 	_arrival_countdown -= delta
 	# If nobody can arrive right now (entrance full, nothing to do), retry next frame.
@@ -128,6 +128,7 @@ func _spawn_person(couple: Couple) -> bool:
 	spot_occupants[spot] = person
 	couple.add_person(person)
 	person.appear()
+	Sfx.play("guest_arrived")
 	guest_arrived.emit(person, couple.people.size() > 1)
 	return true
 
@@ -137,15 +138,17 @@ func _on_couple_ended(finished: bool, couple: Couple) -> void:
 		var earned := roundi(couple.happiness)
 		points += earned
 		points_changed.emit(points)
+		Sfx.play("date_done")
 		couple.table.celebrate()
 		get_tree().call_group("popups", "pop", "+%d" % earned, couple.table.heart_spot())
 		get_tree().call_group("camera", "punch", 0.04)
 	elif not is_over:
 		lives -= 1
+		Sfx.play("heart_lost")
 		lives_changed.emit(lives)
 		get_tree().call_group("camera", "shake", 5.0)
 		if lives <= 0:
-			_end_shift(false)
+			end_shift(false)
 	couples.erase(couple)
 	couple.table.release()
 	for person in couple.people:
@@ -161,7 +164,10 @@ func _send_back_to_spot(person: Person) -> void:
 			return
 
 
-func _end_shift(survived: bool) -> void:
+## Ends the shift now (also used by the debug menu). `survived` as in `shift_over`.
+func end_shift(survived: bool) -> void:
+	if is_over:
+		return
 	is_over = true
 	shift_over.emit(survived)
 

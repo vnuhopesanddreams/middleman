@@ -22,6 +22,7 @@ Settings="*res://scenes/ui/settings.gd"
 SaveData="*res://scenes/shift/save_data.gd"
 Music="*res://scenes/ui/music.gd"
 FriendLink="*res://scenes/shift/friend_link.gd"
+Sfx="*res://scenes/ui/sfx.gd"
 BumpDebug="*res://scenes/ui/bump_debug.gd"
 
 [display]

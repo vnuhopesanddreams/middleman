@@ -1,9 +1,10 @@
 extends CanvasLayer
 
-## Debug menu for bumping phones (loaded at startup as the `BumpDebug` autoload, but only
-## does anything in debug builds). Shows what FriendLink and SaveData think is going on
-## and lets you fake bumps, flip the "bump to play" lock and reset friends. Opens over
-## any screen with F3, or a three-finger tap on a phone.
+## Debug menu (loaded at startup as the `BumpDebug` autoload, but only does anything in
+## debug builds), mostly for bumping phones: shows what FriendLink and SaveData think is
+## going on and lets you fake bumps, flip the "bump to play" lock and reset friends. Can
+## also end a shift on the spot. Opens over any screen with F3, or a three-finger tap on
+## a phone.
 
 const TOGGLE_KEY = KEY_F3
 ## Fingers that have to be down at once to open it on a phone.
@@ -75,6 +76,20 @@ func _add_log(line: String) -> void:
 	_log.text = "\n".join(_log_lines)
 
 
+## Ends the shift being played, if there is one.
+func _end_shift(survived: bool) -> void:
+	var shift: ShiftManager
+	for node in get_tree().current_scene.find_children("*", "Node", true, false):
+		if node is ShiftManager:
+			shift = node
+	if shift == null or shift.is_over:
+		_add_log("no shift going")
+		return
+	_panel.hide()
+	shift.end_shift(survived)
+	_add_log("ended shift (%s)" % ("win" if survived else "lose"))
+
+
 func _yes_no(value: bool) -> String:
 	return "yes" if value else "no"
 
@@ -126,6 +141,8 @@ func _build() -> void:
 	_button(list, "new code for me", func() -> void:
 		SaveData.reset_friend_code()
 		_add_log("my code is now %s" % SaveData.friend_code))
+	_button(list, "end shift: win", _end_shift.bind(true))
+	_button(list, "end shift: lose", _end_shift.bind(false))
 	_button(list, "reload screen", func() -> void:
 		_panel.hide()
 		get_tree().paused = false

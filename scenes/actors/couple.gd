@@ -87,6 +87,7 @@ func is_seated() -> bool:
 
 
 func cheer_up() -> void:
+	Sfx.play("action")
 	_set_happiness(happiness + boost_per_visit)
 
 

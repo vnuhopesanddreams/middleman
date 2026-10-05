@@ -36,6 +36,11 @@ const WADDLE_SPEED = 18.0
 const LEAN_SPEED = 12.0
 ## From the sprite's middle down to the feet, which the lean pivots on.
 const SPRITE_FEET = Vector2(0, 8)
+## A footstep sound every this far walked.
+const STEP_DISTANCE = 56.0
+## Moving further than this in one frame is a jump (like wrapping round the room), not
+## walking.
+const MAX_STEP_JUMP = 50.0
 
 @export var sprite_down: Texture2D
 @export var sprite_up: Texture2D
@@ -73,12 +78,16 @@ var _drag_index := -1
 ## dragging: they trail right behind the waiter, where a drag tends to start.
 var _drop_on_release := false
 var _waddle_time := 0.0
+## Walked since the last footstep, and where the waiter was last frame.
+var _since_step := 0.0
+var _last_position := Vector2.ZERO
 
 @onready var interact_area: Area2D = $InteractArea
 @onready var sprite: Sprite2D = $Sprite2D
 
 
 func _ready() -> void:
+	_last_position = global_position
 	# Pivot on the feet instead of the middle, so leaning tips him over rather than spinning.
 	sprite.offset -= SPRITE_FEET
 	sprite.position += SPRITE_FEET
@@ -147,6 +156,7 @@ func _end_touch() -> void:
 func fix_problem(problem: DateProblem) -> void:
 	_stop_walking()
 	active_problem = problem
+	Sfx.play("action")
 	problem.start()
 
 
@@ -156,6 +166,7 @@ func can_hold() -> bool:
 
 func hold(person: Person) -> void:
 	held = person
+	Sfx.play("hold")
 	_trail = [global_position, person.global_position]
 	person.start_following(self, followers)
 
@@ -318,6 +329,18 @@ func _physics_process(delta: float) -> void:
 		held = null
 	if held:
 		_record_trail()
+	_count_steps()
+
+
+func _count_steps() -> void:
+	var moved := global_position.distance_to(_last_position)
+	_last_position = global_position
+	if moved > MAX_STEP_JUMP:
+		return
+	_since_step += moved
+	if _since_step >= STEP_DISTANCE:
+		_since_step = 0.0
+		Sfx.play("walk")
 
 
 ## Steps along the tap path, using the tapped thing once it is in reach. Like guests,

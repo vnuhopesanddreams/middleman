@@ -4,6 +4,8 @@ extends DateProblem
 
 ## How far to drag in total, in world pixels.
 const WIPE_DISTANCE = 55.0
+## A squeak every this far wiped.
+const SQUEAK_EVERY = 11.0
 
 var _wiped := 0.0
 var _last_point := Vector2.ZERO
@@ -22,7 +24,10 @@ func handle_input(event: InputEvent, point: Vector2) -> bool:
 		_last_point = point
 		return true
 	if event is InputEventScreenDrag:
+		var before := _wiped
 		_wiped += point.distance_to(_last_point)
+		if floorf(_wiped / SQUEAK_EVERY) > floorf(before / SQUEAK_EVERY):
+			Sfx.play("wipe")
 		_last_point = point
 		if _wiped >= WIPE_DISTANCE:
 			_succeed()

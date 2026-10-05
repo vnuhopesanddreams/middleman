@@ -62,7 +62,10 @@ func _on_points_changed(total: int) -> void:
 func _process(_delta: float) -> void:
 	var seconds := ceili(shift_manager.time_left)
 	timer_label.text = "%d:%02d" % [seconds / 60, seconds % 60]
-	vignette.hurry = shift_manager.time_left <= HURRY_SECONDS
+	var hurry := shift_manager.time_left <= HURRY_SECONDS
+	if hurry and not vignette.hurry:
+		Sfx.play("hurry")
+	vignette.hurry = hurry
 	if vignette.hurry:
 		var pulse := 0.5 + 0.5 * sin(Time.get_ticks_msec() / 1000.0 * TAU * 2.0)
 		timer_label.add_theme_color_override("font_color", HURRY_COLOR.lerp(Color.WHITE, pulse * 0.4))
