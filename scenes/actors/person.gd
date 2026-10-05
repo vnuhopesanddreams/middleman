@@ -45,6 +45,11 @@ const SWEAT_AFTER = 3.0
 const SWEAT_FULL = 10.0
 const MAX_SWEAT_DROPS = 6
 const SWEAT_COLOR = Color(0.55, 0.8, 1.0)
+## Left waiting at the door this long (not counting while being led), they give up and
+## storm out with their whole party, which costs a heart like any angry table. They
+## pulse red as a warning from DOOR_ANGRY_AFTER.
+const DOOR_PATIENCE = 25.0
+const DOOR_ANGRY_AFTER = 17.0
 ## Walking in: how long the fade-in takes, and how small they start.
 const APPEAR_TIME = 0.4
 const APPEAR_SCALE = 0.5
@@ -64,6 +69,8 @@ var _animation_time := 0.0
 var _path := PackedVector2Array()
 ## How long they've been kept waiting this time.
 var _wait_time := 0.0
+## How long they've spent waiting at the door in all (see DOOR_PATIENCE).
+var _door_time := 0.0
 ## Draws the sweat, over the sprite (this node's own drawing goes under it).
 var _sweat := Node2D.new()
 
@@ -195,6 +202,11 @@ func _move_to(target: Vector2) -> void:
 func _process(delta: float) -> void:
 	_animation_time += delta
 	_wait_time = _wait_time + delta if is_waiting() else 0.0
+	if state == State.WAITING:
+		_door_time += delta
+		if _door_time >= DOOR_PATIENCE and couple:
+			get_tree().call_group("popups", "pop", "HMPH!", global_position - Vector2(0, 18), ANGRY_COLOR)
+			couple.storm_out()
 	_sweat.queue_redraw()
 	var row := WALK_ROW if _moving else IDLE_ROW
 	var column: int = FACING_COLUMN[Vector2.RIGHT if _facing == Vector2.LEFT else _facing]
@@ -206,7 +218,7 @@ func _process(delta: float) -> void:
 
 
 ## Colour cues, most important first: red storming out, gold being led, red pulsing
-## close to storming out, orange with a problem to fix, pink leaving happy, gray waiting
+## close to storming out (a troubled date, or fed up at the door), orange with a problem to fix, pink leaving happy, gray waiting
 ## at the door.
 func _tint() -> Color:
 	var pulse := 0.5 + 0.5 * sin(_animation_time * PULSE_SPEED)
@@ -214,7 +226,7 @@ func _tint() -> Color:
 		return ANGRY_COLOR
 	if state == State.FOLLOWING:
 		return HELD_COLOR
-	if couple and couple.troubled and couple.happiness < DANGER_HAPPINESS:
+	if (couple and couple.troubled and couple.happiness < DANGER_HAPPINESS) 			or (state == State.WAITING and _door_time > DOOR_ANGRY_AFTER):
 		return Color.WHITE.lerp(ANGRY_COLOR, 0.4 + 0.6 * pulse)
 	var problem := current_problem()
 	if problem and not problem.active:

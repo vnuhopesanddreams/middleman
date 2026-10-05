@@ -90,6 +90,12 @@ func cheer_up() -> void:
 	_set_happiness(happiness + boost_per_visit)
 
 
+## Ends the date angrily right away (e.g. someone got fed up waiting at the door).
+func storm_out() -> void:
+	if not _has_ended:
+		_end(false)
+
+
 ## How fast happiness is dropping, from everything going wrong right now.
 func _drain_rate(delta: float) -> float:
 	var rate := 0.0
