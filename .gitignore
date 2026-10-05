@@ -5,3 +5,4 @@
 android_plugin/**/build/
 android_plugin/.gradle/
 android_plugin/local.properties
+*.apk

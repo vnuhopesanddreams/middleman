@@ -7,6 +7,12 @@ extends Node
 
 signal linked(friend_code: String)
 
+## Debug builds only: lets any device fake bumps (like a phone without NFC), set from
+## the bump debug menu.
+var force_fake_bump := false
+## Whether it's listening for a bump right now.
+var is_linking := false
+
 ## The Android plugin, when running on a phone that has it.
 var _plugin: Object
 
@@ -21,9 +27,16 @@ func _ready() -> void:
 
 ## Whether this device can bump at all.
 func can_bump() -> bool:
-	if _plugin:
-		return _plugin.hasNfc()
-	return can_fake_bump()
+	return has_nfc() or can_fake_bump()
+
+
+## Whether the plugin is here and the phone has NFC hardware.
+func has_nfc() -> bool:
+	return _plugin != null and _plugin.hasNfc()
+
+
+func has_plugin() -> bool:
+	return _plugin != null
 
 
 ## Why this device can't bump, to tell the player; empty when it can.
@@ -39,7 +52,9 @@ func why_cant_bump() -> String:
 
 ## Debug builds on a PC can pretend a bump happened, to test the flow.
 func can_fake_bump() -> bool:
-	return _plugin == null and OS.is_debug_build() and not OS.has_feature("mobile")
+	if not OS.is_debug_build():
+		return false
+	return force_fake_bump or (_plugin == null and not OS.has_feature("mobile"))
 
 
 ## Whether NFC is switched on (always true where bumping is faked).
@@ -54,17 +69,19 @@ func open_nfc_settings() -> void:
 
 ## Starts listening for a bump, offering this player's friend code.
 func start() -> void:
+	is_linking = true
 	if _plugin:
 		_plugin.startLinking(SaveData.friend_code)
 
 
 func stop() -> void:
+	is_linking = false
 	if _plugin:
 		_plugin.stopLinking()
 
 
-func fake_bump() -> void:
-	_on_linked(SaveData.new_friend_code())
+func fake_bump(friend_code := "") -> void:
+	_on_linked(friend_code if friend_code else SaveData.new_friend_code())
 
 
 func _on_linked(friend_code: String) -> void:

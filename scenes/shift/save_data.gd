@@ -53,6 +53,18 @@ func set_needs_bump(value: bool) -> void:
 	_save()
 
 
+## Debug: forgets everyone met.
+func clear_friends() -> void:
+	friends.clear()
+	_save()
+
+
+## Debug: gives this player a fresh code.
+func reset_friend_code() -> void:
+	friend_code = new_friend_code()
+	_save()
+
+
 func new_friend_code() -> String:
 	var code := ""
 	for i in CODE_LENGTH:

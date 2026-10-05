@@ -1,8 +1,10 @@
 extends Control
 
 ## "Bump phones!": hold your phone against a friend's to meet them (swapping friend codes
-## over NFC, see FriendLink), which lets you play again. Opened over the win screen or
-## the main menu; `bumped` once it has worked and the player taps PLAY, `closed` on Back.
+## over NFC, see FriendLink), which lets you play again. Once you've met, it gives you
+## both the same question to ask each other (see BumpQuestions). Opened over the win
+## screen or the main menu; `bumped` once it has worked and the player taps PLAY, `closed`
+## on Back.
 
 signal bumped(friend_code: String)
 signal closed
@@ -52,6 +54,7 @@ func _on_linked(friend_code: String) -> void:
 	%FriendCode.text = friend_code
 	%FriendNote.text = "new friend!" if is_new else "good to see you again!"
 	%FriendCount.text = "friends met: %d" % SaveData.friends.size()
+	%Question.text = BumpQuestions.for_pair(SaveData.friend_code, friend_code)
 	%Waiting.hide()
 	%Met.show()
 	%PlayButton.grab_focus()

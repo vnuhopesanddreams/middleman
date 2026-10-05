@@ -42,9 +42,9 @@ script = ExtResource("5_vignette")
 [node name="PointsPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 offset_left = 28.0
-offset_top = 28.0
+offset_top = 128.0
 offset_right = 200.0
-offset_bottom = 160.0
+offset_bottom = 260.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_points")
 
@@ -76,9 +76,9 @@ text = "0"
 [node name="Lives" type="HBoxContainer" parent="."]
 unique_name_in_owner = true
 offset_left = 36.0
-offset_top = 184.0
+offset_top = 284.0
 offset_right = 260.0
-offset_bottom = 240.0
+offset_bottom = 340.0
 mouse_filter = 2
 theme_override_constants/separation = 14
 
@@ -105,8 +105,8 @@ unique_name_in_owner = true
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_top = 28.0
-offset_bottom = 160.0
+offset_top = 128.0
+offset_bottom = 260.0
 grow_horizontal = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_points")
@@ -129,8 +129,8 @@ visible = false
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_top = 270.0
-offset_bottom = 370.0
+offset_top = 370.0
+offset_bottom = 470.0
 grow_horizontal = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_points")
