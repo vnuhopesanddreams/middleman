@@ -1,0 +1,132 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/credits_menu.gd" id="1_credits"]
+[ext_resource type="Theme" path="res://scenes/ui/menu_theme.tres" id="2_theme"]
+
+[node name="CreditsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_credits")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.32, 0.1, 0.16, 1)
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_right = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_constants/outline_size = 28
+theme_override_font_sizes/font_size = 110
+text = "credits"
+horizontal_alignment = 1
+
+[node name="Gap" type="Control" parent="Layout"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="MadeByHeading" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.78, 1)
+theme_override_font_sizes/font_size = 32
+text = "made by"
+horizontal_alignment = 1
+
+[node name="MadeBy" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "vnuhopesanddreams"
+horizontal_alignment = 1
+
+[node name="Gap2" type="Control" parent="Layout"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="ArtHeading" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.78, 1)
+theme_override_font_sizes/font_size = 32
+text = "art and fonts"
+horizontal_alignment = 1
+
+[node name="Interior" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Interior Pack by farm-animal"
+horizontal_alignment = 1
+
+[node name="InteriorLink" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.75, 0.75, 1)
+theme_override_font_sizes/font_size = 20
+text = "farm-animal.itch.io/interior-pack"
+horizontal_alignment = 1
+
+[node name="Characters" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Character Templates by Eris Esra"
+horizontal_alignment = 1
+
+[node name="CharactersLink" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.75, 0.75, 1)
+theme_override_font_sizes/font_size = 20
+text = "erisesra.itch.io/character-templates-pack"
+horizontal_alignment = 1
+
+[node name="Font" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Daydream font by DoubleGum"
+horizontal_alignment = 1
+
+[node name="FontLink" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.75, 0.75, 1)
+theme_override_font_sizes/font_size = 20
+text = "instagram.com/doublegum_"
+horizontal_alignment = 1
+
+[node name="Gap3" type="Control" parent="Layout"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="Engine" type="Label" parent="Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.78, 1)
+theme_override_font_sizes/font_size = 32
+text = "made with Godot Engine"
+horizontal_alignment = 1
+
+[node name="Gap4" type="Control" parent="Layout"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(680, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "BACK"

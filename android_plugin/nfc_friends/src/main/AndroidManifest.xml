@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.NFC" />
+    <!-- The game still installs on phones without NFC; bumping just isn't offered there. -->
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+    <uses-feature android:name="android.hardware.nfc.hce" android:required="false" />
+
+    <application>
+        <!-- Registers the plugin with Godot under the name NfcFriends. -->
+        <meta-data
+            android:name="org.godotengine.plugin.v2.NfcFriends"
+            android:value="com.vnuhopesanddreams.wingchef.nfcfriends.NfcFriendsPlugin" />
+
+        <!-- Answers the other phone while this one is acting as the "card" in a bump. -->
+        <service
+            android:name="com.vnuhopesanddreams.wingchef.nfcfriends.FriendCardService"
+            android:exported="true"
+            android:permission="android.permission.BIND_NFC_SERVICE">
+            <intent-filter>
+                <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.nfc.cardemulation.host_apdu_service"
+                android:resource="@xml/apduservice" />
+        </service>
+    </application>
+</manifest>

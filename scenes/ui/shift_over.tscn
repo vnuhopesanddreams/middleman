@@ -1,0 +1,117 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/shift_over.gd" id="1_over"]
+[ext_resource type="Theme" path="res://scenes/ui/menu_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scenes/ui/pixel_icon.gd" id="3_icon"]
+
+[node name="ShiftOver" type="CanvasLayer"]
+layer = 11
+script = ExtResource("1_over")
+
+[node name="Overlay" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+
+[node name="Dim" type="ColorRect" parent="Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.03, 0.07, 0.88)
+
+[node name="Layout" type="VBoxContainer" parent="Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 28
+alignment = 1
+
+[node name="Title" type="Label" parent="Overlay/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_constants/outline_size = 28
+theme_override_font_sizes/font_size = 100
+text = "TIME'S UP!"
+horizontal_alignment = 1
+
+[node name="Reason" type="Label" parent="Overlay/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.78, 1)
+theme_override_font_sizes/font_size = 36
+text = "nice shift!"
+horizontal_alignment = 1
+
+[node name="Gap" type="Control" parent="Overlay/Layout"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="ScoreRow" type="HBoxContainer" parent="Overlay/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 28
+alignment = 1
+
+[node name="Star" type="Control" parent="Overlay/Layout/ScoreRow"]
+custom_minimum_size = Vector2(110, 110)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("3_icon")
+pattern = PackedStringArray("...X...", "..XXX..", "XXXXXXX", ".XXXXX.", "..XXX..", ".XX.XX.", ".X...X.")
+color = Color(1, 0.85, 0.3, 1)
+outline = 8.0
+
+[node name="Score" type="Label" parent="Overlay/Layout/ScoreRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_constants/outline_size = 24
+theme_override_font_sizes/font_size = 110
+text = "0"
+
+[node name="Best" type="Label" parent="Overlay/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 36
+text = "best 0"
+horizontal_alignment = 1
+
+[node name="NoBump" type="Label" parent="Overlay/Layout"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.35, 1)
+theme_override_font_sizes/font_size = 30
+text = "this phone has no nfc, so no bump needed"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Gap2" type="Control" parent="Overlay/Layout"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+
+[node name="PlayAgainButton" type="Button" parent="Overlay/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(680, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 48
+text = "PLAY AGAIN"
+
+[node name="MainMenuButton" type="Button" parent="Overlay/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(680, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "MAIN MENU"

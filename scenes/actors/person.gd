@@ -2,6 +2,9 @@ class_name Person
 extends CharacterBody2D
 
 signal picked_up
+## Let go of before reaching their table (see `walk_back`).
+signal dropped
+signal seated
 signal leaving
 
 enum State { WAITING, FOLLOWING, SEATED, LEAVING }
@@ -20,8 +23,10 @@ const LEAVE_SPEED = 40.0
 const FEET_OFFSET = Vector2(0, 10)
 ## Worn while the waiter is leading them (same gold as the ring around their table).
 const HELD_COLOR = Color(1.0, 0.85, 0.3)
-## Worn while not seated at a table: waiting at the door, or leaving after their date.
+## Worn while waiting at the door to be seated.
 const UNSEATED_COLOR = Color(0.62, 0.62, 0.66)
+## Worn leaving after a date that went well (same pink as the hearts).
+const HAPPY_COLOR = Color(1.0, 0.72, 0.82)
 ## Pulsed toward while something is going wrong for them that the waiter hasn't
 ## started fixing yet.
 const PROBLEM_COLOR = Color(1.0, 0.5, 0.05)
@@ -40,6 +45,9 @@ const SWEAT_AFTER = 3.0
 const SWEAT_FULL = 10.0
 const MAX_SWEAT_DROPS = 6
 const SWEAT_COLOR = Color(0.55, 0.8, 1.0)
+## Walking in: how long the fade-in takes, and how small they start.
+const APPEAR_TIME = 0.4
+const APPEAR_SCALE = 0.5
 
 var couple: Couple
 var state := State.WAITING
@@ -92,6 +100,7 @@ func current_problem() -> DateProblem:
 func start_following(new_leader: Node2D, holder: Node) -> void:
 	leader = new_leader
 	state = State.FOLLOWING
+	_path.clear()
 	_home = get_parent()
 	reparent(holder)
 	_set_table_highlighted(true)
@@ -100,6 +109,13 @@ func start_following(new_leader: Node2D, holder: Node) -> void:
 
 func stop_following() -> void:
 	_stop(State.WAITING)
+	dropped.emit()
+
+
+## Walks the given path (feet positions) while still waiting, e.g. back to their spot at
+## the door after being dropped.
+func walk_back(path: PackedVector2Array) -> void:
+	_path = path
 
 
 func sit(new_seat: Seat) -> void:
@@ -107,6 +123,7 @@ func sit(new_seat: Seat) -> void:
 	seat = new_seat
 	global_position = seat.global_position
 	_facing = seat.facing
+	seated.emit()
 
 
 func feet_position() -> Vector2:
@@ -146,16 +163,20 @@ func _physics_process(delta: float) -> void:
 	match state:
 		State.FOLLOWING:
 			_move_to(leader.trail_point(FOLLOW_DISTANCE))
+		State.WAITING:
+			if not _path.is_empty():
+				_walk_path(delta)
 		State.LEAVING:
 			_walk_path(delta)
 
 
-## Walks point to point along _path, then fades out.
+## Walks point to point along _path. Someone leaving fades out at the end of it.
 func _walk_path(delta: float) -> void:
 	if _path.is_empty():
-		set_physics_process(false)
 		_moving = false
-		create_tween().tween_property(self, "modulate:a", 0.0, 0.3).finished.connect(queue_free)
+		if state == State.LEAVING:
+			set_physics_process(false)
+			create_tween().tween_property(self, "modulate:a", 0.0, 0.3).finished.connect(queue_free)
 		return
 	var target := _path[0] - FEET_OFFSET
 	_move_to(global_position.move_toward(target, LEAVE_SPEED * delta))
@@ -185,7 +206,8 @@ func _process(delta: float) -> void:
 
 
 ## Colour cues, most important first: red storming out, gold being led, red pulsing
-## close to storming out, orange with a problem to fix, gray not seated at a table.
+## close to storming out, orange with a problem to fix, pink leaving happy, gray waiting
+## at the door.
 func _tint() -> Color:
 	var pulse := 0.5 + 0.5 * sin(_animation_time * PULSE_SPEED)
 	if _stormed_out:
@@ -197,9 +219,20 @@ func _tint() -> Color:
 	var problem := current_problem()
 	if problem and not problem.active:
 		return Color.WHITE.lerp(PROBLEM_COLOR, 0.55 + 0.45 * pulse)
+	if state == State.LEAVING:
+		return HAPPY_COLOR
 	if state != State.SEATED:
 		return UNSEATED_COLOR
 	return Color.WHITE
+
+
+## Fades in and pops up to full size, for walking in the door.
+func appear() -> void:
+	modulate.a = 0.0
+	sprite.scale = Vector2.ONE * APPEAR_SCALE
+	var tween := create_tween().set_parallel()
+	tween.tween_property(self, "modulate:a", 1.0, APPEAR_TIME)
+	tween.tween_property(sprite, "scale", Vector2.ONE, APPEAR_TIME).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 ## At the door to be seated, or seated with their date not there yet.

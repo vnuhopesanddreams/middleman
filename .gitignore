@@ -1,3 +1,7 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+# Android plugin build output and machine-specific SDK path
+android_plugin/**/build/
+android_plugin/.gradle/
+android_plugin/local.properties

@@ -1,0 +1,20 @@
+// Godot Android plugin for bumping phones together over NFC (see nfc_friends/).
+// Build with `gradlew assemble` here; the AARs are copied into addons/nfc_friends/bin.
+
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "wingchef_android_plugins"
+include ":nfc_friends"

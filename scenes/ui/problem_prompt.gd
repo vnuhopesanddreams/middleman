@@ -3,12 +3,14 @@ extends Control
 ## While the waiter is fixing a date problem: what to do and the time left, above the guest.
 
 @export var waiter: Node2D
-@export var font_size := 44
+@export var font_size := 34
 @export var bar_size := Vector2(200, 16)
 @export var color := Color(1, 0.85, 0.3)
 @export var outline_color := Color(0.1, 0.06, 0.08)
 ## Above the guest, in world pixels.
 @export var lift := 26.0
+## Closest the text gets to the sides of the screen.
+@export var edge_margin := 24.0
 
 
 func _process(_delta: float) -> void:
@@ -31,6 +33,9 @@ func _draw() -> void:
 	var font := get_theme_default_font()
 	var text_width := font.get_string_size(problem.prompt, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
 	var text_at := at - Vector2(text_width / 2.0, bar_size.y + 8.0)
+	# Kept on screen when the guest is near an edge.
+	var view := get_viewport_rect()
+	text_at.x = clampf(text_at.x, view.position.x + edge_margin, view.end.x - edge_margin - text_width)
 	draw_string_outline(font, text_at, problem.prompt, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, 10, outline_color)
 	draw_string(font, text_at, problem.prompt, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)
 

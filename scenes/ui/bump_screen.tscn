@@ -1,0 +1,166 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/bump_screen.gd" id="1_bump"]
+[ext_resource type="Theme" path="res://scenes/ui/menu_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scenes/ui/bump_phones.gd" id="3_phones"]
+
+[node name="BumpScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_bump")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.32, 0.1, 0.16, 1)
+
+[node name="Waiting" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_right = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 26
+alignment = 1
+
+[node name="Title" type="Label" parent="Waiting"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_constants/outline_size = 24
+theme_override_font_sizes/font_size = 84
+text = "bump phones!"
+horizontal_alignment = 1
+
+[node name="Explain" type="Label" parent="Waiting"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.78, 1)
+theme_override_font_sizes/font_size = 30
+text = "hold the back of your phone against a friend's to play again"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Phones" type="Control" parent="Waiting"]
+custom_minimum_size = Vector2(0, 340)
+layout_mode = 2
+script = ExtResource("3_phones")
+
+[node name="CodeLabel" type="Label" parent="Waiting"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "your code"
+horizontal_alignment = 1
+
+[node name="Code" type="Label" parent="Waiting"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_constants/outline_size = 20
+theme_override_font_sizes/font_size = 72
+text = "ABC234"
+horizontal_alignment = 1
+
+[node name="NfcOff" type="VBoxContainer" parent="Waiting"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="NfcOffLabel" type="Label" parent="Waiting/NfcOff"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.35, 1)
+theme_override_font_sizes/font_size = 30
+text = "nfc is switched off"
+horizontal_alignment = 1
+
+[node name="NfcButton" type="Button" parent="Waiting/NfcOff"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(680, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 44
+text = "TURN ON NFC"
+
+[node name="FakeBumpButton" type="Button" parent="Waiting"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(680, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 40
+text = "SIMULATE BUMP"
+
+[node name="BackButton" type="Button" parent="Waiting"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(680, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "BACK"
+
+[node name="Met" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_right = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 28
+alignment = 1
+
+[node name="YouMet" type="Label" parent="Met"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.78, 1)
+theme_override_font_sizes/font_size = 40
+text = "you met"
+horizontal_alignment = 1
+
+[node name="FriendCode" type="Label" parent="Met"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_constants/outline_size = 26
+theme_override_font_sizes/font_size = 100
+text = "ABC234"
+horizontal_alignment = 1
+
+[node name="FriendNote" type="Label" parent="Met"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "new friend!"
+horizontal_alignment = 1
+
+[node name="FriendCount" type="Label" parent="Met"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.78, 1)
+theme_override_font_sizes/font_size = 30
+text = "friends met: 1"
+horizontal_alignment = 1
+
+[node name="Gap" type="Control" parent="Met"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+
+[node name="PlayButton" type="Button" parent="Met"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(680, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 84
+text = "PLAY"

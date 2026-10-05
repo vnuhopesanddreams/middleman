@@ -9,8 +9,11 @@
 [ext_resource type="Script" uid="uid://s1b2j2ox0ldg" path="res://scenes/shift/room_repeater.gd" id="7_repeat"]
 [ext_resource type="Script" uid="uid://c5bg6qlts6jj6" path="res://scenes/shift/follow_camera.gd" id="8_camera"]
 [ext_resource type="Script" uid="uid://cv30mjmiwbwfh" path="res://scenes/ui/offscreen_arrows.gd" id="9_arrows"]
-[ext_resource type="Script" path="res://scenes/ui/problem_prompt.gd" id="10_prompt"]
-[ext_resource type="Script" path="res://scenes/ui/drag_stick.gd" id="11_stick"]
+[ext_resource type="Script" uid="uid://gbngyieiq2b4" path="res://scenes/ui/problem_prompt.gd" id="10_prompt"]
+[ext_resource type="Script" uid="uid://c2x4fco6xcf6r" path="res://scenes/ui/drag_stick.gd" id="11_stick"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="12_pause"]
+[ext_resource type="PackedScene" path="res://scenes/ui/shift_over.tscn" id="13_over"]
+[ext_resource type="Script" uid="uid://cosjyx2ox70ee" path="res://scenes/ui/popups.gd" id="14_popups"]
 
 [node name="Node2D" type="Node2D" unique_id=1269219309]
 
@@ -29,7 +32,7 @@ script = ExtResource("9_arrows")
 people = NodePath("../../Room/People")
 waiter = NodePath("../../CharacterBody2D")
 
-[node name="ProblemPrompt" type="Control" parent="HUD" node_paths=PackedStringArray("waiter")]
+[node name="ProblemPrompt" type="Control" parent="HUD" unique_id=1182749379 node_paths=PackedStringArray("waiter")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -40,7 +43,7 @@ mouse_filter = 2
 script = ExtResource("10_prompt")
 waiter = NodePath("../../CharacterBody2D")
 
-[node name="DragStick" type="Control" parent="HUD" node_paths=PackedStringArray("waiter")]
+[node name="DragStick" type="Control" parent="HUD" unique_id=270515673 node_paths=PackedStringArray("waiter")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -49,6 +52,17 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("11_stick")
+waiter = NodePath("../../CharacterBody2D")
+
+[node name="Popups" type="Control" parent="HUD" unique_id=2041205018 node_paths=PackedStringArray("waiter")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("14_popups")
 waiter = NodePath("../../CharacterBody2D")
 
 [node name="Room" type="Node2D" parent="." unique_id=132270393]
@@ -116,3 +130,9 @@ people = NodePath("../Room/People")
 entrance = NodePath("../Entrance")
 exit = NodePath("../Exit")
 walk_grid = NodePath("../WalkGrid")
+
+[node name="PauseMenu" parent="." unique_id=1610725294 instance=ExtResource("12_pause")]
+
+[node name="ShiftOver" parent="." unique_id=1916419816 node_paths=PackedStringArray("shift_manager", "pause_menu") instance=ExtResource("13_over")]
+shift_manager = NodePath("../ShiftManager")
+pause_menu = NodePath("../PauseMenu")

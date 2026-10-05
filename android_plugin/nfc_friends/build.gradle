@@ -1,0 +1,35 @@
+plugins {
+    id "com.android.library"
+}
+
+android {
+    namespace "com.vnuhopesanddreams.wingchef.nfcfriends"
+    // Matches Godot 4.7.2's Android build.
+    compileSdk 36
+
+    defaultConfig {
+        minSdk 24
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// Copies the built AARs to where the Godot export plugin picks them up.
+tasks.register("copyToGodot", Copy) {
+    from("build/outputs/aar")
+    into("../../addons/nfc_friends/bin")
+    include("*.aar")
+}
+afterEvaluate {
+    tasks.named("assembleDebug") { finalizedBy("copyToGodot") }
+    tasks.named("assembleRelease") { finalizedBy("copyToGodot") }
+}
+
+dependencies {
+    // Provided by the game at runtime.
+    compileOnly "org.godotengine:godot:4.7.2.stable"
+    compileOnly "androidx.annotation:annotation:1.9.1"
+}

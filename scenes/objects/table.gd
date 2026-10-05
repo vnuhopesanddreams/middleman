@@ -61,6 +61,11 @@ func release() -> void:
 	set_highlighted(false)
 
 
+## Where the hearts come from, in the world.
+func heart_spot() -> Vector2:
+	return to_global(HEART_SPOT)
+
+
 ## Hearts float up from the table, for a date that went well.
 func celebrate() -> void:
 	var burst := HEART_BURST.new()

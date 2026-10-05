@@ -68,7 +68,8 @@ func _process(delta: float) -> void:
 	_count_down_to_problem(delta)
 	if is_seated():
 		_date_time_left -= delta
-		if _date_time_left <= 0.0:
+		# Doesn't end on a problem: once their time is up, they leave as soon as it's fixed.
+		if _date_time_left <= 0.0 and problems.is_empty():
 			_end(true)
 
 
@@ -109,7 +110,8 @@ func _set_troubled(value: bool) -> void:
 ## Problems only come up on an actual date: both guests seated. They hit a guest who
 ## doesn't have one already.
 func _count_down_to_problem(delta: float) -> void:
-	if not is_seated():
+	# No new problems once their time is up; they're only waiting on the current ones.
+	if not is_seated() or _date_time_left <= 0.0:
 		return
 	var free_guests := people.filter(func(person: Person) -> bool: return person.current_problem() == null)
 	if free_guests.is_empty() or problems.size() >= MAX_PROBLEMS:
@@ -132,6 +134,8 @@ func _start_problem(person: Person) -> void:
 func _on_problem_solved(problem: DateProblem) -> void:
 	problems.erase(problem)
 	_set_happiness(happiness + solve_bonus)
+	get_tree().call_group("popups", "pop", "NICE!", problem.global_position - Vector2(0, 18), Color(0.55, 1.0, 0.6))
+	get_tree().call_group("camera", "punch", 0.05)
 
 
 ## Someone is at the table but their date hasn't sat down yet.

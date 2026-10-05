@@ -10,10 +10,18 @@ config_version=5
 
 [application]
 
-config/name="datechef"
-run/main_scene="uid://b3hmrw4muruop"
+config/name="wingchef"
+run/main_scene="res://scenes/ui/main_menu.tscn"
+config/quit_on_go_back=false
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+Settings="*res://scenes/ui/settings.gd"
+SaveData="*res://scenes/shift/save_data.gd"
+Music="*res://scenes/ui/music.gd"
+FriendLink="*res://scenes/shift/friend_link.gd"
 
 [display]
 
@@ -25,10 +33,22 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
 
+[dotnet]
+
+project/assembly_name="datechef"
+
 [editor]
 
 version_control/plugin_name="GitPlugin"
 version_control/autoload_on_startup=true
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/nfc_friends/plugin.cfg")
+
+[gui]
+
+theme/custom_font="res://assets/Daydream DEMO.otf"
 
 [input]
 
@@ -80,5 +100,7 @@ pointing/emulate_touch_from_mouse=true
 [rendering]
 
 textures/canvas_textures/default_texture_filter=3
+rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

@@ -20,6 +20,9 @@ const FEET_OFFSET = Vector2(0, 8)
 const TAP_RIPPLE = preload("res://scenes/ui/tap_ripple.gd")
 ## Ripple colour for a tap on a guest or table (white otherwise).
 const TARGET_TAP_COLOR = Color(1, 0.85, 0.3)
+## On-screen buttons in this group (like pause) keep touches on them to themselves: a
+## touch reaches both the button and the game, and shouldn't also send the waiter there.
+const TOUCH_BLOCKERS = "blocks_touch"
 ## How far a touch has to move (in screen pixels) before it counts as a drag, not a tap.
 const DRAG_START = 30.0
 ## How far to drag for full speed; less goes slower.
@@ -88,6 +91,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			_interact_with_nearest()
 	elif event is InputEventScreenTouch or event is InputEventScreenDrag:
+		if event is InputEventScreenTouch and event.pressed and _on_button(event.position):
+			return
 		var point: Vector2 = get_canvas_transform().affine_inverse() * event.position
 		if is_instance_valid(active_problem) and active_problem.active:
 			if event is InputEventScreenTouch and event.pressed:
@@ -103,6 +108,13 @@ func _unhandled_input(event: InputEvent) -> void:
 				_end_touch()
 		elif event.index == _drag_index:
 			_move_touch(event.position)
+
+
+func _on_button(at: Vector2) -> bool:
+	for button: Control in get_tree().get_nodes_in_group(TOUCH_BLOCKERS):
+		if button.is_visible_in_tree() and button.get_global_rect().has_point(at):
+			return true
+	return false
 
 
 func _start_touch(index: int, at: Vector2) -> void:

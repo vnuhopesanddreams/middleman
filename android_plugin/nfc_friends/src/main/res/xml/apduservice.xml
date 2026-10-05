@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The made-up NFC application id the two phones talk on: F0 then "WINGCHF". -->
+<host-apdu-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/nfc_friends_service"
+    android:requireDeviceUnlock="false">
+    <aid-group android:category="other" android:description="@string/nfc_friends_service">
+        <aid-filter android:name="F057494E47434846" />
+    </aid-group>
+</host-apdu-service>

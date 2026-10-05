@@ -1,0 +1,4 @@
+plugins {
+    // Same Android Gradle plugin as Godot 4.7's Android build.
+    id "com.android.library" version "8.6.1" apply false
+}
